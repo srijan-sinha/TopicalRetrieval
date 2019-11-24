@@ -15,16 +15,20 @@ import glob
 import os
 import smart_open
 import time
-
+import sys
 
 # In[2]:
-
+# usage
+# give model file in argument 1
+# give identifiery like numdimensions in argument 2
+dimensionidentifier = int(sys.argv[2])
 
 IV_file = '../../data/inverted_index.pkl'
 TAGDICFILE = '../../data/trainTagsToIndex.pkl'
 DOC_LENGTH_FILE = '../../data/doc_length.pkl'
 QUERIES_FILE = '../../data/queries.txt'
-DOC2VECMODEL = '../../data/modelembedding.pkl'
+# DOC2VECMODEL = '../../data/modelembedding.pkl'
+DOC2VECMODEL = sys.argv[1]
 stopwords = open('../code/stopwords.txt', 'r').readlines()
 punctuation = open('../code/punctuation.txt', 'r').readlines()
 stopwords = [i.strip() for i in stopwords]
@@ -208,7 +212,7 @@ def writeOutput(answers, filename):
 # In[12]:
 
 
-writeOutput(answersallOptimized, "../../data/answersOptimized.txt")
+writeOutput(answersallOptimized, "../../data/answersOptimized" + str(dimensionidentifier) + ".txt")
 
 
 # In[ ]:

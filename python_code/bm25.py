@@ -15,7 +15,7 @@ import glob
 import os
 import smart_open
 import time
-
+import sys
 
 # In[2]:
 
@@ -25,6 +25,7 @@ TAGDICFILE = '../../data/trainTagsToIndex.pkl'
 DOC_LENGTH_FILE = '../../data/doc_length.pkl'
 QUERIES_FILE = '../../data/queries.txt'
 DOC2VECMODEL = '../../data/modelembedding.pkl'
+# DOC2VECMODEL = sys.argv[1]
 stopwords = open('../code/stopwords.txt', 'r').readlines()
 punctuation = open('../code/punctuation.txt', 'r').readlines()
 stopwords = [i.strip() for i in stopwords]
