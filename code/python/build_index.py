@@ -9,9 +9,6 @@ import time
 import pickle as pkl
 import argparse
 
-
-
-
 parser = argparse.ArgumentParser()
 parser.add_argument('-s', action="store", dest="stopword_file", help="stopword file")
 parser.add_argument('-p', action="store", dest="punctuation_file", help="punctuation file")
@@ -81,10 +78,3 @@ f.close()
 f = open(doc_length_file, 'wb')
 pkl.dump(doc_length, f)
 f.close()
-
-# f = open('../../data/inverted_index.pkl', 'rb')
-# inverted_index_stored = pkl.load(f)
-# f.close()
-# f = open('../../data/doc_length.pkl', 'rb')
-# doc_length_stored = pkl.load(f)
-# f.close()
