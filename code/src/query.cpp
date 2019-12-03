@@ -113,9 +113,14 @@ int main(int argc, char *argv[]) {
 
 	string queryFile, outputQueryFile;
 	// topicFile = "/home/cse/btech/cs1160315/scratch/project_col864/data/topics.51-100";
+	if (argc != 3) {
+		cerr << "Usage: <binary> -q <queryFile> -o <outputQueryFile>" << endl;
+		return 0;
+	}
 	readCmdArgs(argc, argv, queryFile, outputQueryFile);				cerr << "Reading query file and writing output." << endl;
 	ifstream fs_query (queryFile);
 	ofstream fs_out (outputQueryFile);
 	readFile(fs_query, fs_out);													cerr << "Done." << endl;
+	return 0;
 
 }

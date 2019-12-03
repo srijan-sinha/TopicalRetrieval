@@ -162,14 +162,18 @@ void readCmdArgs (int argc, char *argv[], string& inputDir, string& outputDir) {
 int main (int argc, char *argv[]) {
 
 	string inputDir, outputDir;
+	if (argc != 3) {
+		cerr << "Usage: <binary> -i <inputDir> -o <outputDir>" << endl;
+		return 0;
+	}
 	readCmdArgs(argc, argv, inputDir, outputDir);		cerr << "Collecting file names." << endl;
 	listFiles(inputDir);								cerr << "Iterating and creating files." << endl;
 	for (auto i : file_name) {
 		readFile(i, inputDir, outputDir);
 		totalFiles++;
 	}
-	cerr << "Total docs: " << totalDocs << endl;
-	cerr << "Total files: " << totalFiles << endl;
+	cout << "Total docs: " << totalDocs << endl;
+	cout << "Total files: " << totalFiles << endl;
 
 	return 0;
 
