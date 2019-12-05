@@ -12,38 +12,52 @@ import glob
 import os
 import smart_open
 import time
-import sys
+import argparse
 
-# usage
-# give model file in argument 1
-# give identifiery like numdimensions in argument 2
-# give topn in 3rd
-dimensionidentifier = int(sys.argv[2])
-topn = int(sys.argv[3])
-IV_file = '../../data/pickle/inverted_index.pkl'
-TAGDICFILE = '../../data/pickle/trainTagsToIndex.pkl'
-DOC_LENGTH_FILE = '../../data/pickle/doc_length.pkl'
-QUERIES_FILE = '../../data/queries.txt'
-# DOC2VECMODEL = '../../data/modelembedding.pkl'
-DOC2VECMODEL = sys.argv[1]
-stopwords = open('../code/stopwords.txt', 'r').readlines()
-punctuation = open('../code/punctuation.txt', 'r').readlines()
+parser = argparse.ArgumentParser()
+parser.add_argument('-d', action="store", dest="dimension", help="embedding dimension to be used for ranking", type=int)
+parser.add_argument('-e', action="store", dest="epochs", help="embedding model training epochs", type=int)
+parser.add_argument('-n', action="store", dest="top_n", help="candidate set filter size", type=int)
+parser.add_argument('-m', action="store", dest="model_pre", help="embedding file path prefix")
+
+results = parser.parse_args()
+dimensionidentifier = results.dimension
+topn = results.top_n
+epochs = results.epochs
+model_pre = results.model_pre
+
+IV_file = './data/pickle/inverted_index.pkl'
+TAGDICFILE = './data/pickle/trainTagsToIndex.pkl'
+DOC_LENGTH_FILE = './data/pickle/doc_length.pkl'
+QUERIES_FILE = './data/trec_data/queries.txt'
+DOC2VECMODEL = model_pre + '_' + str(dimensions)+"D_"+str(epochs)+"E.pkl"
+STOPWORD_FILE = './stopwords.txt'
+PUNCTUATION_FILE = './punctuation.txt'
+OUTPUT_FILE = './data/output/ranking_optimized_' + str(dimensionidentifier)+'_'+str(topn) + '.txt'
+
+stopwords = open(STOPWORD_FILE, 'r').readlines()
+punctuation = open(PUNCTUATION_FILE, 'r').readlines()
 stopwords = [i.strip() for i in stopwords]
 punctuation = [i.strip() for i in punctuation]
+
 f = open(IV_file, 'rb')
 inverted_index = pkl.load(f)
 f.close()
+
 f = open(DOC_LENGTH_FILE, 'rb')
 documentLenArr = pkl.load(f)
 f.close()
+
 f = open(TAGDICFILE, 'rb')
 tagDic = pkl.load(f)
 f.close()
+
 numdocuments = len(documentLenArr)
 k1 = 1.5
 b = 0.5
 avgDoclength = sum(documentLenArr)*1.0/numdocuments
 maxranking = 50
+
 f = open(DOC2VECMODEL, 'rb')
 doc2vecmodel = pkl.load(f)
 f.close()
@@ -51,11 +65,9 @@ f.close()
 def read_corpus_query(fname):
     with smart_open.open(fname, encoding="iso-8859-1") as f:
         for i, line in enumerate(f):
-#             print(i,line)
             tokens = gensim.utils.simple_preprocess(line)
             yield tokens
             
-# assuming numdocuments, documentLenArr, k1, b, avgDoclength, maxrank
 #usage sort_index(getScoreForQuery(find_count(query)))
 def getScoreForQuery(queryMap):
     documentToScore = {}
@@ -136,7 +148,6 @@ docsets = []
 for doc_id in range(len(test_corpus)):
     inferred_vector = doc2vecmodel.infer_vector(test_corpus[doc_id])
     sims = doc2vecmodel.docvecs.most_similar([inferred_vector], topn=topn)
-#     print(sims[:])
     docsets.append(set([x for x,_ in sims]))
 answersallOptimized = []
 for x in range(len(queries)):
@@ -153,10 +164,9 @@ def writeOutput(answers, filename):
         doctagToScore = tagToScore(thisanswer)
         for j in range(len(doctagToScore)):
             tempstr = str(i+51) + " 0 "+ doctagToScore[j][0] + " " + str(j+1)+" "+ str(doctagToScore[j][1])+ " p\n"
-#             print(tempstr)
             ansstr += tempstr
     outfile = open(filename, "w")
     outfile.write(ansstr)
     outfile.close()
     
-writeOutput(answersallOptimized, "../../data/output/answersOptimized" + str(dimensionidentifier)+"_"+str(topn) + ".txt")
+writeOutput(answersallOptimized, )

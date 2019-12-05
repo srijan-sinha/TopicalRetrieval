@@ -12,44 +12,44 @@ import glob
 import os
 import smart_open
 import time
-import sys
 
-IV_file = '../../data/pickle/inverted_index.pkl'
-TAGDICFILE = '../../data/pickle/trainTagsToIndex.pkl'
-DOC_LENGTH_FILE = '../../data/pickle/doc_length.pkl'
-QUERIES_FILE = '../../data/queries.txt'
-DOC2VECMODEL = '../../data/model_embeddings/modelembedding.pkl'
-# DOC2VECMODEL = sys.argv[1]
-stopwords = open('../code/stopwords.txt', 'r').readlines()
-punctuation = open('../code/punctuation.txt', 'r').readlines()
+IV_file = './data/pickle/inverted_index.pkl'
+TAGDICFILE = './data/pickle/trainTagsToIndex.pkl'
+DOC_LENGTH_FILE = './data/pickle/doc_length.pkl'
+QUERIES_FILE = './data/trec_data/queries.txt'
+STOPWORD_FILE = './stopwords.txt'
+PUNCTUATION_FILE = './punctuation.txt'
+OUTPUT_FILE = './data/output/ranking_unoptimized.txt'
+
+stopwords = open(STOPWORD_FILE, 'r').readlines()
+punctuation = open(PUNCTUATION_FILE, 'r').readlines()
 stopwords = [i.strip() for i in stopwords]
 punctuation = [i.strip() for i in punctuation]
+
 f = open(IV_file, 'rb')
 inverted_index = pkl.load(f)
 f.close()
+
 f = open(DOC_LENGTH_FILE, 'rb')
 documentLenArr = pkl.load(f)
 f.close()
+
 f = open(TAGDICFILE, 'rb')
 tagDic = pkl.load(f)
 f.close()
+
 numdocuments = len(documentLenArr)
 k1 = 1.5
 b = 0.5
 avgDoclength = sum(documentLenArr)*1.0/numdocuments
 maxranking = 50
-f = open(DOC2VECMODEL, 'rb')
-doc2vecmodel = pkl.load(f)
-f.close()
 
 def read_corpus_query(fname):
     with smart_open.open(fname, encoding="iso-8859-1") as f:
         for i, line in enumerate(f):
-#             print(i,line)
             tokens = gensim.utils.simple_preprocess(line)
             yield tokens
             
-# assuming numdocuments, documentLenArr, k1, b, avgDoclength, maxrank
 #usage sort_index(getScoreForQuery(find_count(query)))
 def getScoreForQuery(queryMap):
     documentToScore = {}
@@ -145,4 +145,4 @@ def writeOutput(answers, filename):
     outfile.write(ansstr)
     outfile.close()
     
-writeOutput(answersall, "../../data/output/answers.txt")
+writeOutput(answersall, OUTPUT_FILE)
